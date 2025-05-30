@@ -1,0 +1,120 @@
+.white {
+  height: 100vh;
+  position: fixed;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.white:before {
+  z-index: 1;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60vh;
+  background-image: linear-gradient(-180deg, #b3d4ff 0%, rgba(179,212,255,0.00) 100%);
+}
+.white:after {
+  z-index: 1;
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20vh;
+  background-image: linear-gradient(0deg, #e6f0fa 0%, rgba(230,240,250,0.00) 100%);
+}
+.squares {
+  height: 100%;
+  display: flex;
+  justify-content: space-around;
+  overflow: hidden;
+  position: absolute;
+  width: 100%;
+}
+.square {
+  animation: squares 9.5s linear infinite;
+  align-self: flex-end;
+  width: 1em;
+  height: 1em;
+  transform: translateY(100%);
+  background: linear-gradient(135deg, #80b8ff 60%, #a3c2d6 100%);
+  opacity: 0.6;
+  border-radius: 0.5em;
+}
+.square:nth-child(2) {
+  height: 1.5em;
+  width: 3em;
+  animation-delay: 1s;
+  animation-duration: 17s;
+  filter: blur(5px);
+  background: linear-gradient(135deg, #b3d4ff 60%, #c2d6e6 100%);
+}
+.square:nth-child(3) {
+  height: 2em;
+  width: 1em;
+  animation-delay: 1.5s;
+  animation-duration: 8s;
+  background: linear-gradient(135deg, #4d9cff 60%, #e6f0fa 100%);
+}
+.square:nth-child(4) {
+  height: 1em;
+  width: 1.5em;
+  animation-delay: 0.5s;
+  filter: blur(3px);
+  animation-duration: 13s;
+  background: linear-gradient(135deg, #a3c2d6 60%, #b3d4ff 100%);
+}
+.square:nth-child(5) {
+  height: 1.25em;
+  width: 2em;
+  animation-delay: 4s;
+  filter: blur(2px);
+  animation-duration: 11s;
+  background: linear-gradient(135deg, #e6f0fa 60%, #80b8ff 100%);
+}
+.square:nth-child(6) {
+  height: 2.5em;
+  width: 2em;
+  animation-delay: 2s;
+  filter: blur(1px);
+  animation-duration: 9s;
+  background: linear-gradient(135deg, #003d80 60%, #7fa6c2 100%);
+}
+.square:nth-child(7) {
+  height: 5em;
+  width: 2em;
+  filter: blur(2.5px);
+  animation-duration: 12s;
+  background: linear-gradient(135deg, #7fa6c2 60%, #003d80 100%);
+}
+.square:nth-child(8) {
+  height: 1em;
+  width: 3em;
+  animation-delay: 5s;
+  filter: blur(6px);
+  animation-duration: 18s;
+  background: linear-gradient(135deg, #b3d4ff 60%, #e6f0fa 100%);
+}
+.square:nth-child(9) {
+  height: 1.5em;
+  width: 2em;
+  filter: blur(0.5px);
+  animation-duration: 9s;
+  background: linear-gradient(135deg, #a3c2d6 60%, #b3d4ff 100%);
+}
+.square:nth-child(10) {
+  height: 3em;
+  width: 2.4em;
+  animation-delay: 6s;
+  filter: blur(0.5px);
+  animation-duration: 12s;
+  background: linear-gradient(135deg, #003d80 60%, #e6f0fa 100%);
+}
+@keyframes squares {
+  from { transform: translateY(100%) rotate(-50deg); opacity: 0.7; }
+  to { transform: translateY(-120vh) rotate(20deg); opacity: 0.2; }
+} 
