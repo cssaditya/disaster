@@ -3,6 +3,6 @@
 @tailwind utilities;
 
 body {
-  @apply bg-gradient-to-br from-primary-700 via-primary-900 to-blue-900 min-h-screen;
+  @apply bg-gradient-to-br from-blue-200 via-blue-300 to-blue-400 min-h-screen;
   background-attachment: fixed;
 }

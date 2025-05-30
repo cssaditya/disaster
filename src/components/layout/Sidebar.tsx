@@ -18,9 +18,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
   const closeSidebar = () => {
-    if (window.innerWidth < 1024) {
-      setOpen(false);
-    }
+    setOpen(false);
   };
 
   const navItems = [
