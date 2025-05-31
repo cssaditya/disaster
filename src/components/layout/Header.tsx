@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Sun, Moon, Bell, AlertTriangle, Menu, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -9,6 +10,13 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('loggedIn');
+    localStorage.removeItem('userType');
+    navigate('/login');
+  };
 
   return (
     <header className="bg-white dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700 shadow-sm py-2 px-4 flex items-center justify-between">
@@ -58,6 +66,13 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
           ) : (
             <Moon size={20} className="text-neutral-600" />
           )}
+        </button>
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="ml-2 px-4 py-2 rounded bg-emergency-900 text-white hover:bg-emergency-800 transition-colors"
+        >
+          Logout
         </button>
       </div>
     </header>

@@ -2,16 +2,29 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 const Login: React.FC = () => {
-  const [userType, setUserType] = useState<'citizen' | 'officer'>('citizen');
-  const [showPassword, setShowPassword] = useState(false);
   const [showOfficerPassword, setShowOfficerPassword] = useState(false);
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [officerId, setOfficerId] = useState('');
+  const [officerPassword, setOfficerPassword] = useState('');
   const navigate = useNavigate();
 
-  // Placeholder for notification
   const showNotif = (type: 'success' | 'error', message: string) => {
     setNotification({ type, message });
     setTimeout(() => setNotification(null), 3000);
+  };
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    if (users[officerId] && users[officerId].password === officerPassword && users[officerId].type === 'officer') {
+      localStorage.setItem('loggedIn', 'true');
+      localStorage.setItem('userType', 'officer');
+      localStorage.setItem('currentOfficerId', officerId);
+      showNotif('success', 'Logged in as Officer!');
+      setTimeout(() => navigate('/'), 1000);
+    } else {
+      showNotif('error', 'Invalid credentials.');
+    }
   };
 
   return (
@@ -29,77 +42,29 @@ const Login: React.FC = () => {
             <span className="text-blue-400 text-3xl"><i className="fa-solid fa-traffic-light" /></span>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-300 to-blue-500 bg-clip-text text-transparent">DisasterResponse</h1>
           </div>
-          <p className="text-blue-200 text-center">Sign in to access your dashboard</p>
+          <p className="text-blue-200 text-center">Officer Login</p>
         </div>
-        {/* User Type Selector */}
-        <div className="flex mb-6 rounded-lg overflow-hidden bg-slate-800">
-          <button type="button" className={`flex-1 py-2 text-center transition-all ${userType === 'citizen' ? 'bg-blue-700 text-white font-semibold' : 'text-blue-200 hover:bg-slate-700'}`} onClick={() => setUserType('citizen')}>
-            <i className="fa-solid fa-user mr-2" /> Citizen
-          </button>
-          <button type="button" className={`flex-1 py-2 text-center transition-all ${userType === 'officer' ? 'bg-blue-700 text-white font-semibold' : 'text-blue-200 hover:bg-slate-700'}`} onClick={() => setUserType('officer')}>
-            <i className="fa-solid fa-shield-halved mr-2" /> Officer
-          </button>
-        </div>
-        {/* Forms */}
-        {userType === 'citizen' ? (
-          <form className="space-y-6" onSubmit={e => { e.preventDefault(); showNotif('success', 'Logged in as Citizen!'); }}>
-            <div>
-              <label className="block text-sm font-medium text-blue-200 mb-1">Email</label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i className="fa-solid fa-envelope text-blue-400" /></span>
-                <input type="email" required className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" placeholder="your@email.com" />
-              </div>
+        <form className="space-y-6" onSubmit={handleLogin}>
+          <div>
+            <label className="block text-sm font-medium text-blue-200 mb-1">Officer ID</label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i className="fa-solid fa-id-card text-blue-400" /></span>
+              <input type="text" required className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" placeholder="TPD-12345" value={officerId} onChange={e => setOfficerId(e.target.value)} />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-blue-200 mb-1">Password</label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i className="fa-solid fa-lock text-blue-400" /></span>
-                <input type={showPassword ? 'text' : 'password'} required className="w-full pl-10 pr-10 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" placeholder="••••••••" />
-                <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-blue-400 hover:text-blue-300 transition duration-200">
-                  <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`} />
-                </button>
-              </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-blue-200 mb-1">Password</label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i className="fa-solid fa-lock text-blue-400" /></span>
+              <input type={showOfficerPassword ? 'text' : 'password'} required className="w-full pl-10 pr-10 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" placeholder="••••••••" value={officerPassword} onChange={e => setOfficerPassword(e.target.value)} />
+              <button type="button" onClick={() => setShowOfficerPassword(v => !v)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-blue-400 hover:text-blue-300 transition duration-200">
+                <i className={`fa-solid ${showOfficerPassword ? 'fa-eye-slash' : 'fa-eye'}`} />
+              </button>
             </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input type="checkbox" id="remember" className="mr-2 accent-blue-600" />
-                <label htmlFor="remember" className="text-sm text-blue-200">Remember me</label>
-              </div>
-              <a href="#" className="text-sm text-blue-400 hover:text-blue-300 transition duration-200">Forgot password?</a>
-            </div>
-            <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg shadow btn-glow transition duration-200">Sign In</button>
-            <div className="text-center text-sm text-blue-200">Don't have an account? <Link to="/signup" className="text-blue-400 hover:text-blue-300 font-medium transition duration-200">Sign up</Link></div>
-          </form>
-        ) : (
-          <form className="space-y-6" onSubmit={e => { e.preventDefault(); showNotif('success', 'Logged in as Officer!'); }}>
-            <div>
-              <label className="block text-sm font-medium text-blue-200 mb-1">Officer ID</label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i className="fa-solid fa-id-card text-blue-400" /></span>
-                <input type="text" required className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" placeholder="TPD-12345" />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-blue-200 mb-1">Password</label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i className="fa-solid fa-lock text-blue-400" /></span>
-                <input type={showOfficerPassword ? 'text' : 'password'} required className="w-full pl-10 pr-10 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" placeholder="••••••••" />
-                <button type="button" onClick={() => setShowOfficerPassword(v => !v)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-blue-400 hover:text-blue-300 transition duration-200">
-                  <i className={`fa-solid ${showOfficerPassword ? 'fa-eye-slash' : 'fa-eye'}`} />
-                </button>
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input type="checkbox" id="officer-remember" className="mr-2 accent-blue-600" />
-                <label htmlFor="officer-remember" className="text-sm text-blue-200">Remember me</label>
-              </div>
-              <a href="#" className="text-sm text-blue-400 hover:text-blue-300 transition duration-200">Forgot password?</a>
-            </div>
-            <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg shadow btn-glow transition duration-200">Officer Sign In</button>
-            <div className="text-center text-sm text-blue-200">Don't have an account? <Link to="/signup" className="text-blue-400 hover:text-blue-300 font-medium transition duration-200">Register as Officer</Link></div>
-          </form>
-        )}
+          </div>
+          <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg shadow btn-glow transition duration-200">Officer Sign In</button>
+          <div className="text-center text-sm text-blue-200">Don't have an account? <a href="/signup" className="text-blue-400 hover:text-blue-300 font-medium transition duration-200">Register as Officer</a></div>
+        </form>
       </div>
     </div>
   );

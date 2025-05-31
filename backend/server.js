@@ -209,34 +209,34 @@ app.get('/api/dashboard', (req, res) => {
   try {
     console.log('Processing dashboard request...');
     
-    const totalDisasters = activeDisasters.disasters.length;
-    const criticalDisasters = activeDisasters.disasters.filter(d => d.severity >= 4).length;
-    const totalAffected = activeDisasters.disasters.reduce((sum, d) => sum + d.affectedPopulation, 0);
-    
+  const totalDisasters = activeDisasters.disasters.length;
+  const criticalDisasters = activeDisasters.disasters.filter(d => d.severity >= 4).length;
+  const totalAffected = activeDisasters.disasters.reduce((sum, d) => sum + d.affectedPopulation, 0);
+  
     console.log('Calculating total resources...');
-    const totalResources = resourceHubs.hubs.reduce((sum, hub) => {
+  const totalResources = resourceHubs.hubs.reduce((sum, hub) => {
       const hubResources = hub.resources || {};
-      return {
+    return {
         food_kits: sum.food_kits + (hubResources.food_kits?.available || 0),
         medical_kits: sum.medical_kits + (hubResources.medical_kits?.available || 0),
         tents: sum.tents + (hubResources.tents?.available || 0),
         water_packets: sum.water_packets + (hubResources.water_packets?.available || 0)
-      };
-    }, { food_kits: 0, medical_kits: 0, tents: 0, water_packets: 0 });
+    };
+  }, { food_kits: 0, medical_kits: 0, tents: 0, water_packets: 0 });
 
     console.log('Getting recent allocations...');
-    const recentAllocations = allocationHistory.allocations
-      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-      .slice(0, 5);
+  const recentAllocations = allocationHistory.allocations
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    .slice(0, 5);
 
     const response = {
-      overview: {
-        totalDisasters,
-        criticalDisasters,
-        totalAffected,
-        totalResources
-      },
-      recentAllocations
+    overview: {
+      totalDisasters,
+      criticalDisasters,
+      totalAffected,
+      totalResources
+    },
+    recentAllocations
     };
 
     console.log('Sending dashboard response:', response);
@@ -253,15 +253,15 @@ app.get('/api/dashboard', (req, res) => {
 // Get all active disasters
 app.get('/api/disasters', (req, res) => {
   try {
-    const disastersWithCityInfo = activeDisasters.disasters.map(disaster => {
-      const city = cities.cities.find(c => c.id === disaster.cityId);
-      return {
-        ...disaster,
+  const disastersWithCityInfo = activeDisasters.disasters.map(disaster => {
+    const city = cities.cities.find(c => c.id === disaster.cityId);
+    return {
+      ...disaster,
         cityInfo: city || { id: disaster.cityId, name: 'Unknown City', coordinates: { lat: 0, lng: 0 } }
-      };
-    });
-    
-    res.json(disastersWithCityInfo);
+    };
+  });
+  
+  res.json(disastersWithCityInfo);
   } catch (error) {
     console.error('Error in /api/disasters:', error);
     res.status(500).json({ error: 'Failed to fetch disasters' });
@@ -271,16 +271,16 @@ app.get('/api/disasters', (req, res) => {
 // Get specific disaster
 app.get('/api/disasters/:id', (req, res) => {
   try {
-    const disaster = activeDisasters.disasters.find(d => d.id === req.params.id);
-    if (!disaster) {
-      return res.status(404).json({ error: 'Disaster not found' });
-    }
-    
-    const city = cities.cities.find(c => c.id === disaster.cityId);
-    res.json({
-      ...disaster,
+  const disaster = activeDisasters.disasters.find(d => d.id === req.params.id);
+  if (!disaster) {
+    return res.status(404).json({ error: 'Disaster not found' });
+  }
+  
+  const city = cities.cities.find(c => c.id === disaster.cityId);
+  res.json({
+    ...disaster,
       cityInfo: city || { id: disaster.cityId, name: 'Unknown City', coordinates: { lat: 0, lng: 0 } }
-    });
+  });
   } catch (error) {
     console.error('Error in /api/disasters/:id:', error);
     res.status(500).json({ error: 'Failed to fetch disaster details' });
@@ -290,7 +290,7 @@ app.get('/api/disasters/:id', (req, res) => {
 // Get resource hubs
 app.get('/api/hubs', (req, res) => {
   try {
-    res.json(resourceHubs.hubs);
+  res.json(resourceHubs.hubs);
   } catch (error) {
     console.error('Error in /api/hubs:', error);
     res.status(500).json({ error: 'Failed to fetch resource hubs' });
@@ -300,11 +300,11 @@ app.get('/api/hubs', (req, res) => {
 // Get specific hub
 app.get('/api/hubs/:id', (req, res) => {
   try {
-    const hub = resourceHubs.hubs.find(h => h.id === req.params.id);
-    if (!hub) {
+  const hub = resourceHubs.hubs.find(h => h.id === req.params.id);
+  if (!hub) {
       return res.status(404).json({ error: 'Resource hub not found' });
-    }
-    res.json(hub);
+  }
+  res.json(hub);
   } catch (error) {
     console.error('Error in /api/hubs/:id:', error);
     res.status(500).json({ error: 'Failed to fetch hub details' });
@@ -318,11 +318,11 @@ app.get('/api/predictions/:cityId', (req, res) => {
     if (!cityPredictions || cityPredictions.length === 0) {
       return res.status(404).json({ error: 'Prediction not found' });
     }
-    res.json({
+  res.json({
       predictions: cityPredictions,
       lastUpdated: predictions.lastUpdated,
       nextUpdate: predictions.nextUpdate
-    });
+  });
   } catch (error) {
     console.error('Error in /api/predictions/:cityId:', error);
     res.status(500).json({ error: 'Failed to fetch predictions' });
@@ -452,13 +452,84 @@ app.post('/api/chatbot', (req, res) => {
   
   let response = "I'm here to help with disaster relief information. You can ask about active disasters, resource availability, or allocation status.";
   
-  if (lowerMessage.includes('disaster') || lowerMessage.includes('emergency')) {
+  // List all active disasters
+  if (lowerMessage.includes('all disasters') || lowerMessage.includes('list disasters')) {
+    if (activeDisasters.disasters.length === 0) {
+      response = 'There are currently no active disasters.';
+    } else {
+      response = 'Active disasters:\n' + activeDisasters.disasters.map(d => `- ${d.name} in ${cities.cities.find(c => c.id === d.cityId)?.name || d.cityId} (${d.type}, severity ${d.severity})`).join('\n');
+    }
+  }
+  // List all resource hubs
+  else if (lowerMessage.includes('all hubs') || lowerMessage.includes('list hubs') || lowerMessage.includes('resource hubs')) {
+    response = 'Resource hubs:\n' + resourceHubs.hubs.map(h => `- ${h.name} (${h.location}): ${h.capacity_status} capacity`).join('\n');
+  }
+  // Resource availability by city or hub
+  else if (lowerMessage.match(/resources? (in|at) (.+)/)) {
+    const match = lowerMessage.match(/resources? (in|at) (.+)/);
+    const place = match[2].trim();
+    // Try city first
+    const city = cities.cities.find(c => c.name.toLowerCase() === place);
+    if (city) {
+      // Find hub in that city
+      const hub = resourceHubs.hubs.find(h => h.location.toLowerCase() === place);
+      if (hub) {
+        response = `${hub.name} (${hub.location}) resources:\n` +
+          `Food kits: ${hub.resources.food_kits.available}\n` +
+          `Medical kits: ${hub.resources.medical_kits.available}\n` +
+          `Tents: ${hub.resources.tents.available}\n` +
+          `Water packets: ${hub.resources.water_packets.available}`;
+      } else {
+        response = `No resource hub found in ${city.name}.`;
+      }
+    } else {
+      // Try hub by name
+      const hub = resourceHubs.hubs.find(h => h.name.toLowerCase().includes(place));
+      if (hub) {
+        response = `${hub.name} (${hub.location}) resources:\n` +
+          `Food kits: ${hub.resources.food_kits.available}\n` +
+          `Medical kits: ${hub.resources.medical_kits.available}\n` +
+          `Tents: ${hub.resources.tents.available}\n` +
+          `Water packets: ${hub.resources.water_packets.available}`;
+      } else {
+        response = `No resource hub or city found matching '${place}'.`;
+      }
+    }
+  }
+  // Disaster status by city
+  else if (lowerMessage.match(/disaster (in|at) (.+)/)) {
+    const match = lowerMessage.match(/disaster (in|at) (.+)/);
+    const place = match[2].trim();
+    const city = cities.cities.find(c => c.name.toLowerCase() === place);
+    if (city) {
+      const disaster = activeDisasters.disasters.find(d => d.cityId === city.id);
+      if (disaster) {
+        response = `Disaster in ${city.name}: ${disaster.name} (${disaster.type}, severity ${disaster.severity}). Affected population: ${disaster.affectedPopulation.toLocaleString()}.`;
+      } else {
+        response = `No active disaster reported in ${city.name}.`;
+      }
+    } else {
+      response = `City '${place}' not found.`;
+    }
+  }
+  // How to request resources
+  else if (lowerMessage.includes('request resource') || lowerMessage.includes('how to request')) {
+    response = 'To request resources, please use the Resource Management section of the dashboard or contact your regional command center.';
+  }
+  // How to contact emergency support
+  else if (lowerMessage.includes('contact support') || lowerMessage.includes('emergency contact')) {
+    response = 'For emergency support, contact the National Emergency Helpline at 112 or your local command center.';
+  }
+  // Existing logic for disaster/resource/status
+  else if (lowerMessage.includes('disaster') || lowerMessage.includes('emergency')) {
     const activeCount = activeDisasters.disasters.filter(d => d.status === 'active').length;
     response = `Currently, we have ${activeCount} active disasters. The most critical is in ${cities.cities.find(c => c.id === activeDisasters.disasters[0]?.cityId)?.name || 'various locations'} with severity level ${activeDisasters.disasters[0]?.severity || 'unknown'}.`;
   } else if (lowerMessage.includes('resource') || lowerMessage.includes('supply')) {
     response = "Our resource hubs have food kits, medical supplies, tents, and water packets available. Delhi hub has the highest capacity currently.";
   } else if (lowerMessage.includes('help') || lowerMessage.includes('status')) {
     response = "I can provide information about:\n- Active disasters and their severity\n- Resource hub availability\n- Allocation status and delivery times\n- Risk predictions for different cities";
+  } else {
+    response = "Sorry, I didn't understand that. You can ask about: active disasters, resource hubs, resource availability, disaster status by city, or how to request help.";
   }
   
   res.json({

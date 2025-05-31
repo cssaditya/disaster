@@ -58,7 +58,7 @@ const IndiaDisasterMap = () => {
         ]);
         setDisasters(disastersData);
         setResourceHubs(hubsData);
-        setLastUpdated(new Date());
+          setLastUpdated(new Date());
         setError(null);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -162,13 +162,13 @@ const IndiaDisasterMap = () => {
                 <h3 className="font-bold text-lg">{hub.name}</h3>
                 <div className="mt-2">
                   <h4 className="font-medium">Available Resources:</h4>
-                  <ul className="list-disc pl-4">
+                    <ul className="list-disc pl-4">
                     <li>Food Kits: {hub.resources.food_kits.available}</li>
                     <li>Medical Kits: {hub.resources.medical_kits.available}</li>
                     <li>Tents: {hub.resources.tents.available}</li>
                     <li>Water Packets: {hub.resources.water_packets.available}</li>
-                  </ul>
-                </div>
+                    </ul>
+                  </div>
               </div>
             </Popup>
           </Marker>
@@ -191,7 +191,7 @@ const IndiaDisasterMap = () => {
                 <option value="topo">Topographic</option>
               </select>
             </div>
-
+            
             <div>
               <h4 className="font-medium mb-1">Layers</h4>
               <div className="space-y-2">
@@ -218,11 +218,11 @@ const IndiaDisasterMap = () => {
                     onChange={() => setActiveLayers(prev => ({ ...prev, impactZones: !prev.impactZones }))}
                   />
                   <span>Impact Zones</span>
-                </label>
-              </div>
+                  </label>
+                </div>
             </div>
           </div>
-        </div>
+            </div>
 
         {/* Legend */}
         <div className="absolute bottom-4 left-4 bg-white p-4 rounded-lg shadow-lg z-[1000]">
@@ -244,8 +244,8 @@ const IndiaDisasterMap = () => {
               <img src={resourceIcons.hub.options.iconUrl} alt="Resource Hub" className="w-6 h-6" />
               <span>Resource Hub</span>
             </div>
-          </div>
-        </div>
+            </div>
+            </div>
 
         {/* Last Updated */}
         {lastUpdated && (

@@ -28,14 +28,19 @@ const PredictionCenter: React.FC = () => {
   const [prediction, setPrediction] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [disasters, setDisasters] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchPrediction = async () => {
       setLoading(true);
       setError(null);
       try {
-        const data = await apiService.getPredictions(selectedCity);
-        setPrediction(data);
+        const [predictionData, disastersData] = await Promise.all([
+          apiService.getPredictions(selectedCity),
+          apiService.getDisasters()
+        ]);
+        setPrediction(predictionData);
+        setDisasters(disastersData);
       } catch (err) {
         setError('Failed to fetch prediction data');
       } finally {
@@ -47,6 +52,22 @@ const PredictionCenter: React.FC = () => {
 
   // Helper: get main prediction for city
   const mainPred = prediction?.predictions?.[0];
+
+  // Resource Demand Forecast Data (Indian values)
+  const cityDisasters = disasters.filter((d: any) => d.cityInfo?.id === selectedCity);
+  // Synthesize a time series: Now, 24h, 48h, 72h (scale needs for demo)
+  let forecastData: any[] = [];
+  if (cityDisasters.length > 0) {
+    // Use the most severe/active disaster for the city
+    const disaster = cityDisasters[0];
+    const needs = disaster.resourceNeeds || {};
+    forecastData = [
+      { name: 'Now', medical: needs.medical_kits || 0, food: needs.food_kits || 0, shelter: needs.tents || 0, transport: needs.water_packets || 0, predicted: false },
+      { name: '24h', medical: Math.round((needs.medical_kits || 0) * 1.1), food: Math.round((needs.food_kits || 0) * 1.1), shelter: Math.round((needs.tents || 0) * 1.1), transport: Math.round((needs.water_packets || 0) * 1.1), predicted: true },
+      { name: '48h', medical: Math.round((needs.medical_kits || 0) * 1.2), food: Math.round((needs.food_kits || 0) * 1.2), shelter: Math.round((needs.tents || 0) * 1.2), transport: Math.round((needs.water_packets || 0) * 1.2), predicted: true },
+      { name: '72h', medical: Math.round((needs.medical_kits || 0) * 1.3), food: Math.round((needs.food_kits || 0) * 1.3), shelter: Math.round((needs.tents || 0) * 1.3), transport: Math.round((needs.water_packets || 0) * 1.3), predicted: true },
+    ];
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -163,7 +184,7 @@ const PredictionCenter: React.FC = () => {
                 title="Resource Demand Forecast" 
                 icon={<BarChart3 size={20} className="text-primary-900 dark:text-primary-400" />}
               >
-                <PredictionChart data={[]} />
+                <PredictionChart data={forecastData} />
                 <div className="flex justify-between items-center mt-4">
                   <div className="text-sm text-neutral-600 dark:text-neutral-400">
                     Forecast confidence: <span className="font-medium text-primary-900 dark:text-primary-400">{mainPred ? `${Math.round(mainPred.confidence * 100)}%` : '--'}</span>

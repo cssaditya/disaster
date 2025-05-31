@@ -41,7 +41,7 @@ export const PredictionChart: React.FC<PredictionChartProps> = ({ data }) => {
           <YAxis 
             tick={{ fill: '#616161' }} 
             axisLine={{ stroke: '#e0e0e0' }}
-            label={{ value: 'Resources Needed ($)', angle: -90, position: 'insideLeft', fill: '#616161' }}
+            label={{ value: 'Resources Needed (units)', angle: -90, position: 'insideLeft', fill: '#616161' }}
           />
           <Tooltip 
             contentStyle={{ 
@@ -50,7 +50,7 @@ export const PredictionChart: React.FC<PredictionChartProps> = ({ data }) => {
               borderRadius: '4px',
               boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
             }}
-            formatter={(value: number) => [`$${value.toLocaleString()}`, undefined]}
+            formatter={(value: number) => [value.toLocaleString(), undefined]}
           />
           <Legend />
           <Bar dataKey="medical" name="Medical Supplies" fill="#1a237e" radius={[4, 4, 0, 0]} />

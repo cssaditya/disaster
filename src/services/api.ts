@@ -131,6 +131,12 @@ export const apiService = {
     const response = await api.get('/allocations');
     return response.data;
   },
+
+  // Chatbot
+  chatbotQuery: async (message: string) => {
+    const response = await api.post('/chatbot', { message });
+    return response.data;
+  },
 };
 
 export default apiService; 

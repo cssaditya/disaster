@@ -21,6 +21,10 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
     setOpen(false);
   };
 
+  const officerId = localStorage.getItem('loggedIn') === 'true' ? localStorage.getItem('userType') === 'officer' ? Object.keys(JSON.parse(localStorage.getItem('users') || '{}')).find(id => JSON.parse(localStorage.getItem('users') || '{}')[id].type === 'officer' && id === localStorage.getItem('currentOfficerId')) || localStorage.getItem('currentOfficerId') : '' : '';
+  // Fallback: try to get from session (set on login)
+  const displayOfficerId = localStorage.getItem('currentOfficerId') || officerId || 'Officer';
+
   const navItems = [
     { name: 'Command Dashboard', path: '/', icon: <LayoutDashboard size={20} /> },
     { name: 'Crisis Map', path: '/map', icon: <Map size={20} /> },
@@ -93,19 +97,9 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
               className="w-8 h-8 rounded-full mr-3"
             />
             <div>
-              <p className="font-medium">Emma Wilson</p>
-              <p className="text-xs text-primary-200">Emergency Coordinator</p>
+              <p className="font-medium">{displayOfficerId}</p>
+              <p className="text-xs text-primary-200">Officer</p>
             </div>
-          </div>
-          <div className="mt-4 space-y-1">
-            <button className="w-full flex items-center px-4 py-2 text-sm text-white hover:bg-primary-800 rounded-lg">
-              <Settings size={18} className="mr-3" />
-              <span>Settings</span>
-            </button>
-            <button className="w-full flex items-center px-4 py-2 text-sm text-white hover:bg-primary-800 rounded-lg">
-              <LogOut size={18} className="mr-3" />
-              <span>Logout</span>
-            </button>
           </div>
         </div>
       </aside>
