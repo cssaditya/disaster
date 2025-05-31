@@ -1,0 +1,132 @@
+{
+    "hubs": [
+      {
+        "id": "delhi-hub",
+        "name": "Delhi National Emergency Hub",
+        "location": "Delhi",
+        "coordinates": {
+          "lat": 28.7041,
+          "lng": 77.1025
+        },
+        "resources": {
+          "food_kits": {
+            "available": 85000,
+            "total_capacity": 120000,
+            "allocated": 35000
+          },
+          "medical_kits": {
+            "available": 42000,
+            "total_capacity": 60000,
+            "allocated": 18000
+          },
+          "tents": {
+            "available": 22000,
+            "total_capacity": 35000,
+            "allocated": 13000
+          },
+          "water_packets": {
+            "available": 150000,
+            "total_capacity": 250000,
+            "allocated": 100000
+          }
+        },
+        "capacity_status": "high"
+      },
+      {
+        "id": "mumbai-hub",
+        "name": "Mumbai Western Regional Hub",
+        "location": "Mumbai",
+        "coordinates": {
+          "lat": 19.0760,
+          "lng": 72.8777
+        },
+        "resources": {
+          "food_kits": {
+            "available": 15000,
+            "total_capacity": 80000,
+            "allocated": 65000
+          },
+          "medical_kits": {
+            "available": 12000,
+            "total_capacity": 40000,
+            "allocated": 28000
+          },
+          "tents": {
+            "available": 5000,
+            "total_capacity": 25000,
+            "allocated": 20000
+          },
+          "water_packets": {
+            "available": 25000,
+            "total_capacity": 120000,
+            "allocated": 95000
+          }
+        },
+        "capacity_status": "critical"
+      },
+      {
+        "id": "kolkata-hub",
+        "name": "Kolkata Eastern Hub",
+        "location": "Kolkata",
+        "coordinates": {
+          "lat": 22.5726,
+          "lng": 88.3639
+        },
+        "resources": {
+          "food_kits": {
+            "available": 45000,
+            "total_capacity": 70000,
+            "allocated": 25000
+          },
+          "medical_kits": {
+            "available": 18000,
+            "total_capacity": 35000,
+            "allocated": 17000
+          },
+          "tents": {
+            "available": 8000,
+            "total_capacity": 20000,
+            "allocated": 12000
+          },
+          "water_packets": {
+            "available": 60000,
+            "total_capacity": 100000,
+            "allocated": 40000
+          }
+        },
+        "capacity_status": "moderate"
+      },
+      {
+        "id": "chennai-hub",
+        "name": "Chennai Southern Hub",
+        "location": "Chennai",
+        "coordinates": {
+          "lat": 13.0827,
+          "lng": 80.2707
+        },
+        "resources": {
+          "food_kits": {
+            "available": 35000,
+            "total_capacity": 60000,
+            "allocated": 25000
+          },
+          "medical_kits": {
+            "available": 22000,
+            "total_capacity": 30000,
+            "allocated": 8000
+          },
+          "tents": {
+            "available": 12000,
+            "total_capacity": 18000,
+            "allocated": 6000
+          },
+          "water_packets": {
+            "available": 70000,
+            "total_capacity": 90000,
+            "allocated": 20000
+          }
+        },
+        "capacity_status": "good"
+      }
+    ]
+  }

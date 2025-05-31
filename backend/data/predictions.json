@@ -1,0 +1,58 @@
+{
+    "predictions": [
+      {
+        "cityId": "kolkata",
+        "disasterType": "cyclone",
+        "riskScore": 0.75,
+        "riskLevel": "high",
+        "timeframe": "24-48 hours",
+        "confidence": 0.82,
+        "factors": ["Bay of Bengal cyclone formation", "Pre-monsoon conditions", "Historical patterns"],
+        "estimatedImpact": {
+          "population": 900000,
+          "severity": 3
+        }
+      },
+      {
+        "cityId": "delhi",
+        "disasterType": "heatwave",
+        "riskScore": 0.65,
+        "riskLevel": "moderate",
+        "timeframe": "48-72 hours",
+        "confidence": 0.71,
+        "factors": ["Rising temperatures", "Urban heat island effect", "Peak summer conditions"],
+        "estimatedImpact": {
+          "population": 2000000,
+          "severity": 2
+        }
+      },
+      {
+        "cityId": "bhubaneswar",
+        "disasterType": "cyclone",
+        "riskScore": 0.68,
+        "riskLevel": "moderate",
+        "timeframe": "48-72 hours",
+        "confidence": 0.78,
+        "factors": ["Cyclone track prediction", "Coastal vulnerability", "Monsoon onset"],
+        "estimatedImpact": {
+          "population": 400000,
+          "severity": 3
+        }
+      },
+      {
+        "cityId": "jaipur",
+        "disasterType": "drought",
+        "riskScore": 0.45,
+        "riskLevel": "low",
+        "timeframe": "7-14 days",
+        "confidence": 0.65,
+        "factors": ["Water reservoir levels", "Delayed monsoon", "Agricultural stress"],
+        "estimatedImpact": {
+          "population": 150000,
+          "severity": 1
+        }
+      }
+    ],
+    "lastUpdated": "2025-05-30T08:00:00Z",
+    "nextUpdate": "2025-05-30T14:00:00Z"
+  }

@@ -8,6 +8,7 @@ import EmergencyResponse from './pages/EmergencyResponse';
 import ResourceManagement from './pages/ResourceManagement';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import CrisisMap from './pages/CrisisMap';
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
-          <Route path="map" element={<IndiaDisasterMap />} />
+          <Route path="map" element={<CrisisMap />} />
           <Route path="prediction" element={<PredictionCenter />} />
           <Route path="emergency" element={<EmergencyResponse />} />
           <Route path="resources" element={<ResourceManagement />} />

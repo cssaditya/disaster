@@ -1,88 +1,69 @@
 import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, LayersControl, Marker, Popup, Circle, FeatureGroup } from 'react-leaflet';
-import L from 'leaflet';
+import L, { LatLngTuple } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import axios from 'axios';
-import { Polyline } from 'react-leaflet'; // Import Polyline
+import apiService from '../services/api';
+import { Disaster, ResourceHub } from '../services/api';
 
 // Custom icons
-const resourceIcons = {
-  shelter: L.icon({
+const disasterIcons = {
+  cyclone: L.icon({
     iconUrl: 'https://cdn-icons-png.flaticon.com/512/2849/2849557.png',
-    iconSize: [28, 28]
+    iconSize: [32, 32]
   }),
-  medical: L.icon({
+  flood: L.icon({
     iconUrl: 'https://cdn-icons-png.flaticon.com/512/2965/2965300.png',
-    iconSize: [28, 28]
+    iconSize: [32, 32]
   }),
-  supplies: L.icon({
+  earthquake: L.icon({
     iconUrl: 'https://cdn-icons-png.flaticon.com/512/411/411745.png',
-    iconSize: [28, 28]
+    iconSize: [32, 32]
   }),
-  evacuation: L.icon({
+  drought: L.icon({
     iconUrl: 'https://cdn-icons-png.flaticon.com/512/3161/3161837.png',
+    iconSize: [32, 32]
+  })
+};
+
+const resourceIcons = {
+  hub: L.icon({
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/2849/2849557.png',
     iconSize: [28, 28]
   })
 };
 
 const IndiaDisasterMap = () => {
   const [activeLayers, setActiveLayers] = useState({
-    precipitation: false,
-    windSpeed: false,
-    impactZones: true,
-    infrastructure: false,
-    evacuationRoutes: true,
-    commOutages: false
+    disasters: true,
+    resourceHubs: true,
+    impactZones: true
   });
   const [baseMap, setBaseMap] = useState('street');
-  const [disasterData, setDisasterData] = useState(null);
-  const [resources, setResources] = useState([]);
-  const [lastUpdated, setLastUpdated] = useState(null);
+  const [disasters, setDisasters] = useState<Disaster[]>([]);
+  const [resourceHubs, setResourceHubs] = useState<ResourceHub[]>([]);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // India center coordinates
-  const indiaCenter = [20.5937, 78.9629];
-
-  // Mock cyclone data for demonstration
-  const mockCyclone = {
-    position: [19.0760, 72.8777], // Mumbai coordinates
-    category: 4,
-    windSpeed: 220, // km/h
-    forecastPath: [
-      [19.0760, 72.8777],
-      [19.5, 73.1],
-      [20.0, 73.5],
-      [20.5, 74.0]
-    ],
-    impactZones: {
-      severeFlooding: [
-        [19.0, 72.8], [19.0, 73.0], [19.2, 73.0], [19.2, 72.8]
-      ],
-      evacuation: [
-        [18.9, 72.7], [18.9, 73.1], [19.3, 73.1], [19.3, 72.7]
-      ]
-    }
-  };
+  const indiaCenter: LatLngTuple = [20.5937, 78.9629];
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Simulate API calls with mock data
-        setTimeout(() => {
-          setDisasterData({
-            cyclone: mockCyclone,
-            precipitation: getMockPrecipitationData(),
-            windSpeed: getMockWindData(),
-            infrastructure: getMockInfrastructureData(),
-            commOutages: getMockOutageData()
-          });
-          
-          setResources(getMockResourceData());
-          setLastUpdated(new Date());
-          setIsLoading(false);
-        }, 1000);
+        setIsLoading(true);
+        const [disastersData, hubsData] = await Promise.all([
+          apiService.getDisasters(),
+          apiService.getResourceHubs()
+        ]);
+        setDisasters(disastersData);
+        setResourceHubs(hubsData);
+        setLastUpdated(new Date());
+        setError(null);
       } catch (error) {
         console.error("Error fetching data:", error);
+        setError("Failed to load disaster data");
+      } finally {
         setIsLoading(false);
       }
     };
@@ -91,48 +72,6 @@ const IndiaDisasterMap = () => {
     const interval = setInterval(fetchData, 300000); // Refresh every 5 minutes
     return () => clearInterval(interval);
   }, []);
-
-  // Mock data generators
-  const getMockResourceData = () => [
-    { id: 1, type: 'shelter', location: [19.0760, 72.8777], name: "Mumbai Central Shelter", capacity: 500 },
-    { id: 2, type: 'medical', location: [19.1, 72.9], name: "Coastal Medical Center", status: "operational" },
-    { id: 3, type: 'supplies', location: [19.05, 72.85], name: "Western Relief Depot", supplies: ["food", "water", "blankets"] },
-    { id: 4, type: 'evacuation', location: [19.2, 72.8], name: "Northern Evacuation Point", routes: ["NH8", "Western Express"] }
-  ];
-
-  const getMockPrecipitationData = () => ({
-    type: "FeatureCollection",
-    features: [
-      {}
-    ]
-  });
-
-  const getMockWindData = () => ({
-    type: "FeatureCollection",
-    features: [
-      {}
-    ]
-  });
-
-  const getMockInfrastructureData = () => ({
-    hospitals: [
-      {}
-    ],
-    powerStations: [
-      {}
-    ]
-  });
-
-  const getMockOutageData = () => ({
-    type: "FeatureCollection",
-    features: [
-      {}
-    ]
-  });
-
-  const toggleLayer = (layer) => {
-    setActiveLayers(prev => ({ ...prev, [layer]: !prev[layer] }));
-  };
 
   const getBaseMapUrl = () => {
     switch(baseMap) {
@@ -146,7 +85,25 @@ const IndiaDisasterMap = () => {
   };
 
   if (isLoading) {
-    return <div className="text-center py-8">Loading disaster data...</div>;
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full space-y-4">
+        <div className="text-emergency-900 text-lg">{error}</div>
+        <button 
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-primary-900 text-white rounded hover:bg-primary-800"
+        >
+          Retry
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -162,78 +119,63 @@ const IndiaDisasterMap = () => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
 
-        {/* Cyclone Forecast Path */}
-        {disasterData?.cyclone && (
-          <FeatureGroup>
-            <Circle
-              center={disasterData.cyclone.position}
-              radius={50000} // 50km radius
-              color="red"
-              fillColor="#f03"
-              fillOpacity={0.3}
-            />
-            <Polyline
-              positions={disasterData.cyclone.forecastPath}
-              color="red"
-              weight={3}
-              dashArray="5, 5"
-            />
-          </FeatureGroup>
-        )}
-
-        {/* Impact Zones */}
-        {activeLayers.impactZones && disasterData?.cyclone?.impactZones && (
-          <>
-            <GeoJSON
-              data={{
-                type: "Feature",
-                geometry: {
-                  type: "Polygon",
-                  coordinates: [disasterData.cyclone.impactZones.severeFlooding]
-                }
-              }}
-              style={{ color: 'blue', fillOpacity: 0.3 }}
-            />
-            <GeoJSON
-              data={{
-                type: "Feature",
-                geometry: {
-                  type: "Polygon",
-                  coordinates: [disasterData.cyclone.impactZones.evacuation]
-                }
-              }}
-              style={{ color: 'red', fillOpacity: 0.2, dashArray: "5, 5" }}
-            />
-          </>
-        )}
-
-        {/* Resources */}
-        {resources.map(resource => (
+        {/* Disasters */}
+        {activeLayers.disasters && disasters.map(disaster => (
           <Marker
-            key={resource.id}
-            position={resource.location}
-            icon={resourceIcons[resource.type]}
+            key={disaster.id}
+            position={[disaster.cityInfo.coordinates.lat, disaster.cityInfo.coordinates.lng]}
+            icon={disasterIcons[disaster.type as keyof typeof disasterIcons]}
           >
             <Popup>
-              <div className="resource-popup">
-                <h3 className="font-bold">{resource.name}</h3>
-                <p className="capitalize text-gray-600">{resource.type.replace(/([A-Z])/g, ' $1').trim()}</p>
-                {resource.capacity && <p>Capacity: {resource.capacity} people</p>}
-                {resource.supplies && (
-                  <div>
-                    <p>Supplies:</p>
-                    <ul className="list-disc pl-4">
-                      {resource.supplies.map(item => <li key={item}>{item}</li>)}
-                    </ul>
-                  </div>
-                )}
+              <div className="disaster-popup">
+                <h3 className="font-bold text-lg">{disaster.name}</h3>
+                <p className="text-gray-600 capitalize">{disaster.type}</p>
+                <p className="mt-2">
+                  <span className="font-medium">Severity:</span> {disaster.severity}/5
+                </p>
+                <p>
+                  <span className="font-medium">Affected Population:</span> {disaster.affectedPopulation.toLocaleString()}
+                </p>
+                <div className="mt-2">
+                  <h4 className="font-medium">Resource Needs:</h4>
+                  <ul className="list-disc pl-4">
+                    <li>Food Kits: {disaster.resourceNeeds.food_kits}</li>
+                    <li>Medical Kits: {disaster.resourceNeeds.medical_kits}</li>
+                    <li>Tents: {disaster.resourceNeeds.tents}</li>
+                    <li>Water Packets: {disaster.resourceNeeds.water_packets}</li>
+                  </ul>
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {/* Resource Hubs */}
+        {activeLayers.resourceHubs && resourceHubs.map(hub => (
+          <Marker
+            key={hub.id}
+            position={[hub.coordinates.lat, hub.coordinates.lng]}
+            icon={resourceIcons.hub}
+          >
+            <Popup>
+              <div className="hub-popup">
+                <h3 className="font-bold text-lg">{hub.name}</h3>
+                <div className="mt-2">
+                  <h4 className="font-medium">Available Resources:</h4>
+                  <ul className="list-disc pl-4">
+                    <li>Food Kits: {hub.resources.food_kits.available}</li>
+                    <li>Medical Kits: {hub.resources.medical_kits.available}</li>
+                    <li>Tents: {hub.resources.tents.available}</li>
+                    <li>Water Packets: {hub.resources.water_packets.available}</li>
+                  </ul>
+                </div>
               </div>
             </Popup>
           </Marker>
         ))}
 
         {/* UI Components */}
-        <Panel position="topright">
+        <div className="absolute top-4 right-4 bg-white p-4 rounded-lg shadow-lg z-[1000]">
           <div className="space-y-4">
             <h3 className="font-bold">Map Layers</h3>
             
@@ -249,108 +191,71 @@ const IndiaDisasterMap = () => {
                 <option value="topo">Topographic</option>
               </select>
             </div>
-            
+
             <div>
-              <h4 className="font-medium mb-1">Map Layers</h4>
-              {Object.entries(activeLayers).map(([layer, active]) => (
-                <div key={layer} className="flex items-center">
+              <h4 className="font-medium mb-1">Layers</h4>
+              <div className="space-y-2">
+                <label className="flex items-center space-x-2">
                   <input
                     type="checkbox"
-                    id={layer}
-                    checked={active}
-                    onChange={() => toggleLayer(layer)}
-                    className="mr-2"
+                    checked={activeLayers.disasters}
+                    onChange={() => setActiveLayers(prev => ({ ...prev, disasters: !prev.disasters }))}
                   />
-                  <label htmlFor={layer} className="capitalize">
-                    {layer.replace(/([A-Z])/g, ' $1').trim()}
-                  </label>
-                </div>
-              ))}
+                  <span>Disasters</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={activeLayers.resourceHubs}
+                    onChange={() => setActiveLayers(prev => ({ ...prev, resourceHubs: !prev.resourceHubs }))}
+                  />
+                  <span>Resource Hubs</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={activeLayers.impactZones}
+                    onChange={() => setActiveLayers(prev => ({ ...prev, impactZones: !prev.impactZones }))}
+                  />
+                  <span>Impact Zones</span>
+                </label>
+              </div>
             </div>
           </div>
-        </Panel>
-
-        <Legend position="bottomleft">
-          <div className="space-y-3">
-            <h3 className="font-bold">Storm Intensity</h3>
-            <div className="flex items-center">
-              <div className="w-4 h-4 bg-red-800 mr-2"></div>
-              <span>Extreme (Cat 4-5)</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-4 h-4 bg-red-600 mr-2"></div>
-              <span>Severe (Cat 3)</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-4 h-4 bg-orange-500 mr-2"></div>
-              <span>Moderate (Cat 1-2)</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-4 h-4 bg-yellow-400 mr-2"></div>
-              <span>Tropical Storm</span>
-            </div>
-
-            <h3 className="font-bold mt-4">Resource Types</h3>
-            <div className="flex items-center">
-              <img src="https://cdn-icons-png.flaticon.com/512/2849/2849557.png" width="16" className="mr-2" />
-              <span>Emergency Shelter</span>
-            </div>
-            <div className="flex items-center">
-              <img src="https://cdn-icons-png.flaticon.com/512/2965/2965300.png" width="16" className="mr-2" />
-              <span>Medical Facility</span>
-            </div>
-            <div className="flex items-center">
-              <img src="https://cdn-icons-png.flaticon.com/512/411/411745.png" width="16" className="mr-2" />
-              <span>Supply Distribution</span>
-            </div>
-            <div className="flex items-center">
-              <img src="https://cdn-icons-png.flaticon.com/512/3161/3161837.png" width="16" className="mr-2" />
-              <span>Evacuation Point</span>
-            </div>
-
-            <h3 className="font-bold mt-4">Impact Zones</h3>
-            <div className="flex items-center">
-              <div className="w-4 h-4 bg-blue-500 opacity-30 mr-2"></div>
-              <span>Severe Flooding</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-4 h-4 bg-red-500 opacity-20 mr-2"></div>
-              <span>Evacuation Zone</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-4 h-4 bg-green-500 opacity-30 mr-2"></div>
-              <span>Safe Zone</span>
-            </div>
-          </div>
-        </Legend>
-
-        <DataFreshnessIndicator position="bottomright" lastUpdated={lastUpdated} />
-      </MapContainer>
-
-      {/* Alert Banner */}
-      {disasterData?.cyclone && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-2 rounded shadow-lg z-[1000]">
-          <strong>Cyclone Alert:</strong> Category {disasterData.cyclone.category} cyclone approaching. 
-          Expected landfall in 6 hours. Evacuation recommended for highlighted areas.
         </div>
-      )}
+
+        {/* Legend */}
+        <div className="absolute bottom-4 left-4 bg-white p-4 rounded-lg shadow-lg z-[1000]">
+          <h3 className="font-bold mb-2">Legend</h3>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <img src={disasterIcons.cyclone.options.iconUrl} alt="Cyclone" className="w-6 h-6" />
+              <span>Cyclone</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <img src={disasterIcons.flood.options.iconUrl} alt="Flood" className="w-6 h-6" />
+              <span>Flood</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <img src={disasterIcons.earthquake.options.iconUrl} alt="Earthquake" className="w-6 h-6" />
+              <span>Earthquake</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <img src={resourceIcons.hub.options.iconUrl} alt="Resource Hub" className="w-6 h-6" />
+              <span>Resource Hub</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Last Updated */}
+        {lastUpdated && (
+          <div className="absolute bottom-4 right-4 bg-white p-2 rounded-lg shadow-lg z-[1000] text-sm text-gray-600">
+            Last updated: {lastUpdated.toLocaleTimeString()}
+          </div>
+        )}
+      </MapContainer>
     </div>
   );
-};
-
-// UI Component: Panel
-const Panel = ({ position = 'topright', children }) => {
-  // Implementation of Panel component
-};
-
-// UI Component: Legend
-const Legend = ({ position = 'bottomleft', children }) => {
-  // Implementation of Legend component
-};
-
-// UI Component: Data Freshness Indicator
-const DataFreshnessIndicator = ({ position = 'bottomright', lastUpdated }) => {
-  // Implementation of DataFreshnessIndicator component
 };
 
 export default IndiaDisasterMap; 

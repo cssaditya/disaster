@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import { 
@@ -14,8 +14,40 @@ import {
 import { AIInsightCard } from '../components/prediction/AIInsightCard';
 import { PredictionMetricCard } from '../components/prediction/PredictionMetricCard';
 import { PredictionChart } from '../components/prediction/PredictionChart';
+import apiService from '../services/api';
+
+const cities = [
+  { id: 'delhi', name: 'Delhi' },
+  { id: 'kolkata', name: 'Kolkata' },
+  { id: 'bhubaneswar', name: 'Bhubaneswar' },
+  { id: 'jaipur', name: 'Jaipur' }
+];
 
 const PredictionCenter: React.FC = () => {
+  const [selectedCity, setSelectedCity] = useState(cities[0].id);
+  const [prediction, setPrediction] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPrediction = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await apiService.getPredictions(selectedCity);
+        setPrediction(data);
+      } catch (err) {
+        setError('Failed to fetch prediction data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPrediction();
+  }, [selectedCity]);
+
+  // Helper: get main prediction for city
+  const mainPred = prediction?.predictions?.[0];
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
@@ -26,13 +58,27 @@ const PredictionCenter: React.FC = () => {
           </p>
         </div>
         <div className="flex items-center space-x-2 mt-4 md:mt-0">
-          <Button variant="outline" size="sm" icon={<RefreshCw size={16} />}>
+          <Button variant="outline" size="sm" icon={<RefreshCw size={16} />} onClick={() => setSelectedCity(selectedCity)}>
             Refresh Models
           </Button>
           <Button variant="primary" size="sm" icon={<Brain size={16} />}>
             Run Analysis
           </Button>
         </div>
+      </div>
+
+      {/* City Selector */}
+      <div className="flex items-center space-x-2">
+        <span className="font-medium text-neutral-700 dark:text-neutral-300">Select City:</span>
+        <select
+          className="p-2 rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+          value={selectedCity}
+          onChange={e => setSelectedCity(e.target.value)}
+        >
+          {cities.map(city => (
+            <option key={city.id} value={city.id}>{city.name}</option>
+          ))}
+        </select>
       </div>
 
       {/* AI Status */}
@@ -55,256 +101,175 @@ const PredictionCenter: React.FC = () => {
             <span className="mx-3 text-primary-300">|</span>
             <div className="flex items-center">
               <Clock size={16} className="mr-1 text-primary-200" />
-              <span className="text-sm">Last update: 5 minutes ago</span>
+              <span className="text-sm">Last update: {prediction?.lastUpdated ? new Date(prediction.lastUpdated).toLocaleString() : '...'}</span>
             </div>
           </div>
         </div>
       </Card>
 
-      {/* Key metrics row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <PredictionMetricCard 
-          title="Population Impact" 
-          value="327,500" 
-          change="+12.8%" 
-          trend="up"
-          timeframe="Next 24 hours"
-          icon={<Eye size={20} />}
-        />
-        <PredictionMetricCard 
-          title="Resource Demand" 
-          value="$6.2M" 
-          change="+18.5%" 
-          trend="up"
-          timeframe="Next 48 hours"
-          icon={<TrendingUp size={20} />}
-        />
-        <PredictionMetricCard 
-          title="Expected Rainfall" 
-          value="14.2 in" 
-          change="+3.7 in" 
-          trend="up"
-          timeframe="Next 12 hours"
-          icon={<TrendingUp size={20} />}
-        />
-        <PredictionMetricCard 
-          title="Displacement Risk" 
-          value="High" 
-          change="+12%" 
-          trend="up"
-          timeframe="Coastal regions"
-          icon={<TrendingUp size={20} />}
-        />
-      </div>
-
-      {/* Main content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left column - charts */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card 
-            title="Resource Demand Forecast" 
-            icon={<BarChart3 size={20} className="text-primary-900 dark:text-primary-400" />}
-          >
-            <PredictionChart />
-            <div className="flex justify-between items-center mt-4">
-              <div className="text-sm text-neutral-600 dark:text-neutral-400">
-                Forecast confidence: <span className="font-medium text-primary-900 dark:text-primary-400">87%</span>
-              </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                icon={<ChevronRight size={16} />} 
-                iconPosition="right"
-              >
-                View Detailed Forecast
-              </Button>
-            </div>
-          </Card>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card 
-              title="Evacuation Route Efficiency" 
-              icon={<TrendingUp size={20} className="text-primary-900 dark:text-primary-400" />}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-3xl font-bold text-neutral-900 dark:text-white">76%</div>
-                <div className="flex items-center text-success-500">
-                  <TrendingUp size={16} className="mr-1" />
-                  <span className="text-sm font-medium">+12%</span>
-                </div>
-              </div>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                Current evacuation efficiency score based on traffic flow, resource distribution, and population density.
-              </p>
-              <div className="mt-4">
-                <div className="h-2 w-full bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-                  <div className="h-full bg-primary-900 rounded-full" style={{ width: '76%' }}></div>
-                </div>
-                <div className="flex justify-between mt-1 text-xs text-neutral-500 dark:text-neutral-500">
-                  <span>Critical (0-40%)</span>
-                  <span>Optimal (70-100%)</span>
-                </div>
-              </div>
-            </Card>
-
-            <Card 
-              title="Storm Path Confidence" 
-              icon={<Eye size={20} className="text-primary-900 dark:text-primary-400" />}
-            >
-              <div className="flex flex-col items-center justify-center p-4">
-                <div className="relative">
-                  <svg className="w-36 h-36">
-                    <circle 
-                      cx="72" 
-                      cy="72" 
-                      r="60" 
-                      fill="none" 
-                      stroke="#e0e0e0" 
-                      strokeWidth="12" 
-                      className="dark:stroke-neutral-700"
-                    />
-                    <circle 
-                      cx="72" 
-                      cy="72" 
-                      r="60" 
-                      fill="none" 
-                      stroke="#1a237e" 
-                      strokeWidth="12" 
-                      strokeDasharray="377" 
-                      strokeDashoffset="94" 
-                      className="dark:stroke-primary-400"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center flex-col">
-                    <span className="text-3xl font-bold text-neutral-900 dark:text-white">75%</span>
-                    <span className="text-sm text-neutral-600 dark:text-neutral-400">Confidence</span>
-                  </div>
-                </div>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-4 text-center">
-                  Current predictive accuracy based on multiple atmospheric models
-                </p>
-              </div>
-            </Card>
+      {/* Loading/Error */}
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900"></div>
+        </div>
+      ) : error ? (
+        <div className="flex flex-col items-center justify-center py-12 space-y-4">
+          <span className="text-emergency-900 text-lg">{error}</span>
+          <Button onClick={() => setSelectedCity(selectedCity)}>Retry</Button>
+        </div>
+      ) : (
+        <>
+          {/* Key metrics row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <PredictionMetricCard 
+              title="Population Impact" 
+              value={mainPred?.estimatedImpact?.population?.toLocaleString() || '--'} 
+              change={mainPred ? `+${Math.round(mainPred.riskScore * 10)}%` : '--'} 
+              trend={mainPred?.riskScore > 0.5 ? 'up' : 'down'}
+              timeframe={mainPred?.timeframe || '--'}
+              icon={<Eye size={20} />}
+            />
+            <PredictionMetricCard 
+              title="Risk Level" 
+              value={mainPred?.riskLevel ? mainPred.riskLevel.charAt(0).toUpperCase() + mainPred.riskLevel.slice(1) : '--'} 
+              change={mainPred ? `+${Math.round(mainPred.riskScore * 10)}%` : '--'} 
+              trend={mainPred?.riskScore > 0.5 ? 'up' : 'down'}
+              timeframe={mainPred?.timeframe || '--'}
+              icon={<TrendingUp size={20} />}
+            />
+            <PredictionMetricCard 
+              title="Disaster Type" 
+              value={mainPred?.disasterType ? mainPred.disasterType.charAt(0).toUpperCase() + mainPred.disasterType.slice(1) : '--'} 
+              change={mainPred ? `${Math.round(mainPred.confidence * 100)}%` : '--'} 
+              trend={mainPred?.confidence > 0.7 ? 'up' : 'down'}
+              timeframe={mainPred?.timeframe || '--'}
+              icon={<Sparkles size={20} />}
+            />
+            <PredictionMetricCard 
+              title="Severity" 
+              value={mainPred?.estimatedImpact?.severity?.toString() || '--'} 
+              change={mainPred ? `${Math.round(mainPred.confidence * 100)}%` : '--'} 
+              trend={mainPred?.confidence > 0.7 ? 'up' : 'down'}
+              timeframe={mainPred?.timeframe || '--'}
+              icon={<TrendingUp size={20} />}
+            />
           </div>
-        </div>
 
-        {/* Right column - AI insights */}
-        <div className="space-y-6">
-          <Card 
-            title="AI Generated Insights" 
-            icon={<Sparkles size={20} className="text-primary-900 dark:text-primary-400" />}
-          >
-            <div className="space-y-4">
-              <AIInsightCard 
-                title="Resource Allocation Recommendation"
-                description="Shift 30% of medical supplies from western district to coastal evacuation centers within next 6 hours."
-                confidence={92}
-                time="15 minutes ago"
-                type="recommendation"
-              />
-              
-              <AIInsightCard 
-                title="Flooding Risk Alert"
-                description="Johnson Creek watershed predicted to exceed flood stage by 3ft in next 12 hours. Recommend immediate evacuation of zones B4-B7."
-                confidence={87}
-                time="32 minutes ago"
-                type="alert"
-              />
-              
-              <AIInsightCard 
-                title="Supply Chain Disruption"
-                description="I-75 North predicted to become impassable within 8 hours. Reroute supply convoys via Highway 301 alternate route."
-                confidence={78}
-                time="1 hour ago"
-                type="prediction"
-              />
-              
-              <AIInsightCard 
-                title="Power Restoration Estimate"
-                description="Power grid analysis predicts 72% restoration within 36 hours post-landfall, prioritize hospitals and water treatment facilities."
-                confidence={65}
-                time="1.5 hours ago"
-                type="forecast"
-              />
-            </div>
-            
-            <div className="mt-4">
-              <Button 
-                variant="primary" 
-                fullWidth
-                icon={<ChevronRight size={16} />} 
-                iconPosition="right"
+          {/* Main content */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left column - charts */}
+            <div className="lg:col-span-2 space-y-6">
+              <Card 
+                title="Resource Demand Forecast" 
+                icon={<BarChart3 size={20} className="text-primary-900 dark:text-primary-400" />}
               >
-                View All AI Insights
-              </Button>
-            </div>
-          </Card>
+                <PredictionChart data={[]} />
+                <div className="flex justify-between items-center mt-4">
+                  <div className="text-sm text-neutral-600 dark:text-neutral-400">
+                    Forecast confidence: <span className="font-medium text-primary-900 dark:text-primary-400">{mainPred ? `${Math.round(mainPred.confidence * 100)}%` : '--'}</span>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    icon={<ChevronRight size={16} />} 
+                    iconPosition="right"
+                  >
+                    View Detailed Forecast
+                  </Button>
+                </div>
+              </Card>
 
-          <Card 
-            title="Model Performance" 
-            icon={<Brain size={20} className="text-primary-900 dark:text-primary-400" />}
-          >
-            <div className="space-y-3">
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm font-medium text-neutral-900 dark:text-white">
-                    Resource Demand Prediction
-                  </span>
-                  <span className="text-sm text-success-500 font-medium">92%</span>
-                </div>
-                <div className="h-2 w-full bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-                  <div className="h-full bg-success-500 rounded-full" style={{ width: '92%' }}></div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm font-medium text-neutral-900 dark:text-white">
-                    Population Movement
-                  </span>
-                  <span className="text-sm text-success-500 font-medium">88%</span>
-                </div>
-                <div className="h-2 w-full bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-                  <div className="h-full bg-success-500 rounded-full" style={{ width: '88%' }}></div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm font-medium text-neutral-900 dark:text-white">
-                    Weather Pattern Analysis
-                  </span>
-                  <span className="text-sm text-primary-900 dark:text-primary-400 font-medium">78%</span>
-                </div>
-                <div className="h-2 w-full bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-                  <div className="h-full bg-primary-900 dark:bg-primary-400 rounded-full" style={{ width: '78%' }}></div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm font-medium text-neutral-900 dark:text-white">
-                    Infrastructure Impact
-                  </span>
-                  <span className="text-sm text-warning-500 font-medium">65%</span>
-                </div>
-                <div className="h-2 w-full bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-                  <div className="h-full bg-warning-500 rounded-full" style={{ width: '65%' }}></div>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card 
+                  title="Evacuation Route Efficiency" 
+                  icon={<TrendingUp size={20} className="text-primary-900 dark:text-primary-400" />}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="text-3xl font-bold text-neutral-900 dark:text-white">{mainPred ? `${Math.round(mainPred.confidence * 100)}%` : '--'}</div>
+                    <div className="flex items-center text-success-500">
+                      <TrendingUp size={16} className="mr-1" />
+                      <span className="text-sm font-medium">+{mainPred ? Math.round(mainPred.riskScore * 10) : '--'}%</span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                    Current evacuation efficiency score based on traffic flow, resource distribution, and population density.
+                  </p>
+                  <div className="mt-4">
+                    <div className="h-2 w-full bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                      <div className="h-full bg-primary-900 rounded-full" style={{ width: mainPred ? `${Math.round(mainPred.confidence * 100)}%` : '0%' }}></div>
+                    </div>
+                    <div className="flex justify-between mt-1 text-xs text-neutral-500 dark:text-neutral-500">
+                      <span>Critical (0-40%)</span>
+                      <span>Optimal (70-100%)</span>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card 
+                  title="Storm Path Confidence" 
+                  icon={<Eye size={20} className="text-primary-900 dark:text-primary-400" />}
+                >
+                  <div className="flex flex-col items-center justify-center p-4">
+                    <div className="relative">
+                      <svg className="w-36 h-36">
+                        <circle 
+                          cx="72" 
+                          cy="72" 
+                          r="60" 
+                          fill="none" 
+                          stroke="#e0e0e0" 
+                          strokeWidth="12" 
+                          className="dark:stroke-neutral-700"
+                        />
+                        <circle 
+                          cx="72" 
+                          cy="72" 
+                          r="60" 
+                          fill="none" 
+                          stroke="#1a237e" 
+                          strokeWidth="12" 
+                          strokeDasharray="377" 
+                          strokeDashoffset={mainPred ? 377 - Math.round(mainPred.confidence * 377) : 377} 
+                          className="dark:stroke-primary-400"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center flex-col">
+                        <span className="text-3xl font-bold text-neutral-900 dark:text-white">{mainPred ? `${Math.round(mainPred.confidence * 100)}%` : '--'}</span>
+                        <span className="text-sm text-neutral-600 dark:text-neutral-400">Confidence</span>
+                      </div>
+                    </div>
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-4 text-center">
+                      Current predictive accuracy based on multiple atmospheric models
+                    </p>
+                  </div>
+                </Card>
               </div>
             </div>
-            
-            <div className="flex justify-between items-center mt-4 text-sm">
-              <span className="text-neutral-600 dark:text-neutral-400">
-                Last model training: 4 hours ago
-              </span>
-              <Button variant="outline" size="sm">
-                Retrain Models
-              </Button>
+
+            {/* Right column - AI insights */}
+            <div className="space-y-6">
+              <Card 
+                title="AI Generated Insights" 
+                icon={<Sparkles size={20} className="text-primary-900 dark:text-primary-400" />}
+              >
+                <div className="space-y-4">
+                  {mainPred?.factors?.map((factor: string, idx: number) => (
+                    <AIInsightCard
+                      key={idx}
+                      title={mainPred.disasterType ? `${mainPred.disasterType.charAt(0).toUpperCase() + mainPred.disasterType.slice(1)} Factor` : 'Factor'}
+                      description={factor}
+                      confidence={Math.round(mainPred.confidence * 100)}
+                      time={mainPred.timeframe || '--'}
+                      type="prediction"
+                    />
+                  ))}
+                  {!mainPred?.factors && <span className="text-neutral-500">No insights available.</span>}
+                </div>
+              </Card>
             </div>
-          </Card>
-        </div>
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

@@ -25,7 +25,6 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
     { name: 'Command Dashboard', path: '/', icon: <LayoutDashboard size={20} /> },
     { name: 'Crisis Map', path: '/map', icon: <Map size={20} /> },
     { name: 'AI Prediction Center', path: '/prediction', icon: <Sparkles size={20} /> },
-    { name: 'Emergency Response', path: '/emergency', icon: <Radio size={20} /> },
     { name: 'Resource Management', path: '/resources', icon: <Package size={20} /> },
   ];
 

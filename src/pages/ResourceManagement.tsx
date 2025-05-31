@@ -50,7 +50,7 @@ const ResourceManagement: React.FC = () => {
             </div>
             <div>
               <p className="text-primary-100">Total Resources</p>
-              <h2 className="text-2xl font-bold">$12.4M</h2>
+              <h2 className="text-2xl font-bold">₹12.4 Cr</h2>
             </div>
           </div>
           <div className="mt-4 flex items-center text-primary-100">
@@ -82,7 +82,7 @@ const ResourceManagement: React.FC = () => {
             </div>
             <div>
               <p className="text-success-100">Budget Remaining</p>
-              <h2 className="text-2xl font-bold">$8.2M</h2>
+              <h2 className="text-2xl font-bold">₹8.2 Cr</h2>
             </div>
           </div>
           <div className="mt-4 flex items-center text-success-100">

@@ -10,7 +10,11 @@ import {
   ResponsiveContainer 
 } from 'recharts';
 
-const data = [
+interface PredictionChartProps {
+  data?: any[];
+}
+
+const defaultData = [
   { name: '24h', medical: 3200, food: 4500, shelter: 2400, transport: 1800, predicted: true },
   { name: '48h', medical: 4800, food: 6000, shelter: 3900, transport: 2700, predicted: true },
   { name: '72h', medical: 5900, food: 8200, shelter: 5600, transport: 4200, predicted: true },
@@ -18,12 +22,13 @@ const data = [
   { name: '120h', medical: 3600, food: 5900, shelter: 5500, transport: 4800, predicted: true },
 ];
 
-export const PredictionChart: React.FC = () => {
+export const PredictionChart: React.FC<PredictionChartProps> = ({ data }) => {
+  const chartData = data && data.length > 0 ? data : defaultData;
   return (
     <div className="h-72">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
-          data={data}
+          data={chartData}
           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />

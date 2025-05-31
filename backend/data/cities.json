@@ -1,0 +1,108 @@
+{
+    "cities": [
+      {
+        "id": "mumbai",
+        "name": "Mumbai",
+        "state": "Maharashtra",
+        "population": 1250000,
+        "coordinates": {
+          "lat": 19.0760,
+          "lng": 72.8777
+        },
+        "type": "coastal",
+        "primaryRisks": ["cyclone", "flood"],
+        "accessibility": 0.9
+      },
+      {
+        "id": "chennai",
+        "name": "Chennai",
+        "state": "Tamil Nadu",
+        "population": 700000,
+        "coordinates": {
+          "lat": 13.0827,
+          "lng": 80.2707
+        },
+        "type": "coastal",
+        "primaryRisks": ["cyclone", "flood"],
+        "accessibility": 0.8
+      },
+      {
+        "id": "patna",
+        "name": "Patna",
+        "state": "Bihar",
+        "population": 680000,
+        "coordinates": {
+          "lat": 25.5941,
+          "lng": 85.1376
+        },
+        "type": "river",
+        "primaryRisks": ["flood"],
+        "accessibility": 0.6
+      },
+      {
+        "id": "delhi",
+        "name": "Delhi",
+        "state": "Delhi",
+        "population": 3200000,
+        "coordinates": {
+          "lat": 28.7041,
+          "lng": 77.1025
+        },
+        "type": "inland",
+        "primaryRisks": ["earthquake", "flood"],
+        "accessibility": 0.9
+      },
+      {
+        "id": "kolkata",
+        "name": "Kolkata",
+        "state": "West Bengal",
+        "population": 1480000,
+        "coordinates": {
+          "lat": 22.5726,
+          "lng": 88.3639
+        },
+        "type": "river",
+        "primaryRisks": ["cyclone", "flood"],
+        "accessibility": 0.7
+      },
+      {
+        "id": "guwahati",
+        "name": "Guwahati",
+        "state": "Assam",
+        "population": 96000,
+        "coordinates": {
+          "lat": 26.1445,
+          "lng": 91.7362
+        },
+        "type": "river",
+        "primaryRisks": ["flood", "earthquake"],
+        "accessibility": 0.5
+      },
+      {
+        "id": "bhubaneswar",
+        "name": "Bhubaneswar",
+        "state": "Odisha",
+        "population": 84000,
+        "coordinates": {
+          "lat": 20.2961,
+          "lng": 85.8245
+        },
+        "type": "coastal",
+        "primaryRisks": ["cyclone", "flood"],
+        "accessibility": 0.7
+      },
+      {
+        "id": "jaipur",
+        "name": "Jaipur",
+        "state": "Rajasthan",
+        "population": 310000,
+        "coordinates": {
+          "lat": 26.9124,
+          "lng": 75.7873
+        },
+        "type": "inland",
+        "primaryRisks": ["drought", "flood"],
+        "accessibility": 0.8
+      }
+    ]
+  }

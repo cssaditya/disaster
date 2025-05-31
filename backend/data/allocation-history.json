@@ -1,0 +1,68 @@
+{
+    "allocations": [
+      {
+        "id": "alloc-001",
+        "disasterId": "mumbai-cyclone-001",
+        "hubId": "mumbai-hub",
+        "resources": {
+          "food_kits": 50000,
+          "medical_kits": 20000,
+          "tents": 15000,
+          "water_packets": 80000
+        },
+        "distance": 0,
+        "estimatedDeliveryTime": "2 hours",
+        "status": "delivered",
+        "timestamp": "2025-05-28T08:00:00Z",
+        "priority": 1
+      },
+      {
+        "id": "alloc-002",
+        "disasterId": "mumbai-cyclone-001",
+        "hubId": "delhi-hub",
+        "resources": {
+          "food_kits": 15000,
+          "medical_kits": 8000,
+          "tents": 5000,
+          "water_packets": 15000
+        },
+        "distance": 1414,
+        "estimatedDeliveryTime": "18 hours",
+        "status": "in_transit",
+        "timestamp": "2025-05-28T10:00:00Z",
+        "priority": 1
+      },
+      {
+        "id": "alloc-003",
+        "disasterId": "patna-flood-002",
+        "hubId": "kolkata-hub",
+        "resources": {
+          "food_kits": 25000,
+          "medical_kits": 17000,
+          "tents": 12000,
+          "water_packets": 40000
+        },
+        "distance": 587,
+        "estimatedDeliveryTime": "8 hours",
+        "status": "dispatched",
+        "timestamp": "2025-05-29T16:00:00Z",
+        "priority": 2
+      },
+      {
+        "id": "alloc-004",
+        "disasterId": "chennai-cyclone-004",
+        "hubId": "chennai-hub",
+        "resources": {
+          "food_kits": 25000,
+          "medical_kits": 8000,
+          "tents": 6000,
+          "water_packets": 20000
+        },
+        "distance": 0,
+        "estimatedDeliveryTime": "1 hour",
+        "status": "ready",
+        "timestamp": "2025-05-30T06:00:00Z",
+        "priority": 4
+      }
+    ]
+  }

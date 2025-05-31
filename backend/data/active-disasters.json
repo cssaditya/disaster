@@ -1,0 +1,104 @@
+{
+    "disasters": [
+      {
+        "id": "mumbai-cyclone-001",
+        "cityId": "mumbai",
+        "type": "cyclone",
+        "name": "Cyclone Tauktae Aftermath",
+        "severity": 4,
+        "status": "active",
+        "startDate": "2025-05-28T06:00:00Z",
+        "affectedPopulation": 1500000,
+        "estimatedDuration": "72 hours",
+        "resourceNeeds": {
+          "food_kits": 180000,
+          "medical_kits": 45000,
+          "tents": 22500,
+          "water_packets": 300000
+        },
+        "currentAllocation": {
+          "food_kits": 65000,
+          "medical_kits": 28000,
+          "tents": 20000,
+          "water_packets": 95000
+        },
+        "priority": 1,
+        "description": "Major cyclone impact with widespread flooding and infrastructure damage"
+      },
+      {
+        "id": "patna-flood-002",
+        "cityId": "patna",
+        "type": "flood",
+        "name": "Ganges River Flooding",
+        "severity": 3,
+        "status": "active",
+        "startDate": "2025-05-29T14:00:00Z",
+        "affectedPopulation": 800000,
+        "estimatedDuration": "48 hours",
+        "resourceNeeds": {
+          "food_kits": 96000,
+          "medical_kits": 24000,
+          "tents": 12000,
+          "water_packets": 160000
+        },
+        "currentAllocation": {
+          "food_kits": 25000,
+          "medical_kits": 17000,
+          "tents": 12000,
+          "water_packets": 40000
+        },
+        "priority": 2,
+        "description": "Severe flooding due to heavy monsoon rains and river overflow"
+      },
+      {
+        "id": "guwahati-flood-003",
+        "cityId": "guwahati",
+        "type": "flood",
+        "name": "Brahmaputra Flash Floods",
+        "severity": 2,
+        "status": "active",
+        "startDate": "2025-05-30T02:00:00Z",
+        "affectedPopulation": 300000,
+        "estimatedDuration": "24 hours",
+        "resourceNeeds": {
+          "food_kits": 36000,
+          "medical_kits": 9000,
+          "tents": 4500,
+          "water_packets": 60000
+        },
+        "currentAllocation": {
+          "food_kits": 0,
+          "medical_kits": 0,
+          "tents": 0,
+          "water_packets": 0
+        },
+        "priority": 3,
+        "description": "Flash flooding in low-lying areas, evacuation in progress"
+      },
+      {
+        "id": "chennai-cyclone-004",
+        "cityId": "chennai",
+        "type": "cyclone",
+        "name": "Cyclone Warning Alert",
+        "severity": 1,
+        "status": "warning",
+        "startDate": "2025-05-31T00:00:00Z",
+        "affectedPopulation": 500000,
+        "estimatedDuration": "36 hours",
+        "resourceNeeds": {
+          "food_kits": 60000,
+          "medical_kits": 15000,
+          "tents": 7500,
+          "water_packets": 100000
+        },
+        "currentAllocation": {
+          "food_kits": 25000,
+          "medical_kits": 8000,
+          "tents": 6000,
+          "water_packets": 20000
+        },
+        "priority": 4,
+        "description": "Cyclone approaching, preventive resource allocation in progress"
+      }
+    ]
+  }
